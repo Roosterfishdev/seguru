@@ -306,13 +306,13 @@
       <strong>Revisión de envíos</strong>
     </div>
     <div class="modes" role="tablist">
-      <button type="button" id="btn-presentacion" aria-pressed="true">Presentación</button>
-      <button type="button" id="btn-wireframe" aria-pressed="false">Wireframe</button>
+      <button type="button" id="btn-presentacion" aria-pressed="false">Presentación</button>
+      <button type="button" id="btn-wireframe" aria-pressed="true">Wireframe</button>
     </div>
   </header>
 
   <main>
-    <section id="presentacion" class="view is-on" aria-label="Vista presentación">
+    <section id="presentacion" class="view" aria-label="Vista presentación">
       <div class="slide">
         <div class="proof">
           <div class="stamp" id="stamp">Envío 1</div>
@@ -330,14 +330,14 @@
       </nav>
     </section>
 
-    <section id="wireframe" class="view" aria-label="Vista wireframe">
+    <section id="wireframe" class="view is-on" aria-label="Vista wireframe">
       <div class="board">
         <article class="cell">
           <div class="cell-head"><b>Envío 1</b><span>01 / 03</span></div>
           <div class="mail">
             <div class="mail-bar">
               <div>De <em>marca@correo.com</em></div>
-              <div>Asunto <em>Envío 1</em></div>
+              <div>Asunto <em>Proteja también su vida y su salud</em></div>
             </div>
             <iframe src="emails/envio-1.html" title="Envío 1"></iframe>
           </div>
@@ -348,7 +348,7 @@
           <div class="mail">
             <div class="mail-bar">
               <div>De <em>marca@correo.com</em></div>
-              <div>Asunto <em>Envío 2</em></div>
+              <div>Asunto <em>Testimonio: Ing. Abraham Wien · Gastos Médicos</em></div>
             </div>
             <iframe src="emails/envio-2.html" title="Envío 2"></iframe>
           </div>
@@ -423,6 +423,7 @@
     });
 
     render();
+    show("wireframe");
   </script>
 </body>
 </html>
