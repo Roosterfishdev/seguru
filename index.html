@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Revisión de envíos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #e6e8ed;
+      --ink: #151920;
+      --mute: #5d6673;
+      --paper: #ffffff;
+      --line: #b7bec8;
+      --stamp: #c81d25;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand small {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+
+    .brand strong {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .modes {
+      display: flex;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+    }
+
+    .modes button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font: 500 13px/1 "IBM Plex Sans", Helvetica, Arial, sans-serif;
+      padding: 9px 14px;
+      cursor: pointer;
+    }
+
+    .modes button[aria-pressed="true"] {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    main {
+      flex: 1;
+      min-height: 0;
+      padding: 22px;
+    }
+
+    .view { display: none; height: 100%; }
+    .view.is-on { display: flex; }
+
+    /* Presentación */
+    #presentacion {
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .slide {
+      width: min(720px, 100%);
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .proof {
+      position: relative;
+      flex: 1;
+      min-height: 420px;
+      background: var(--paper);
+      border: 1px solid var(--ink);
+    }
+
+    .proof::before,
+    .proof::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-color: var(--ink);
+      border-style: solid;
+    }
+
+    .proof::before {
+      top: -7px;
+      left: -7px;
+      border-width: 1px 0 0 1px;
+    }
+
+    .proof::after {
+      right: -7px;
+      bottom: -7px;
+      border-width: 0 1px 1px 0;
+    }
+
+    .stamp {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      z-index: 2;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--stamp);
+      border: 1.5px solid var(--stamp);
+      padding: 4px 8px;
+      background: var(--paper);
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: var(--paper);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .nav button {
+      appearance: none;
+      border: 1px solid var(--ink);
+      background: var(--paper);
+      color: var(--ink);
+      min-width: 40px;
+      height: 36px;
+      padding: 0 12px;
+      font: 500 13px/1 "IBM Plex Sans", Helvetica, Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .nav button:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dots button {
+      min-width: 36px;
+    }
+
+    .dots button[aria-current="true"] {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    /* Wireframe */
+    #wireframe {
+      align-items: stretch;
+      justify-content: center;
+      gap: 0;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      align-items: stretch;
+      gap: 12px;
+      width: min(1180px, 100%);
+      height: 100%;
+    }
+
+    .cell {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .cell-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .cell-head b { color: var(--stamp); font-weight: 500; }
+    .cell-head span { color: var(--mute); }
+
+    .mail {
+      flex: 1;
+      min-height: 0;
+      border: 1px dashed var(--ink);
+      background: repeating-linear-gradient(
+        -45deg,
+        #f3f4f7,
+        #f3f4f7 8px,
+        #eef0f4 8px,
+        #eef0f4 16px
+      );
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mail-bar {
+      display: grid;
+      gap: 6px;
+      padding: 10px 12px;
+      border-bottom: 1px dashed var(--ink);
+      background: #fafbfc;
+      font-size: 12px;
+      color: var(--mute);
+    }
+
+    .mail-bar div {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 8px;
+    }
+
+    .mail-bar em {
+      font-style: normal;
+      color: var(--ink);
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mail iframe {
+      flex: 1;
+      min-height: 280px;
+      background: var(--paper);
+    }
+
+    .arrow {
+      align-self: center;
+      color: var(--mute);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 22px;
+      padding-top: 28px;
+    }
+
+    @media (max-width: 900px) {
+      #wireframe { overflow: auto; }
+      .board {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .arrow { display: none; }
+      .mail iframe { min-height: 360px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <small>Secuencia de emails</small>
+      <strong>Revisión de envíos</strong>
+    </div>
+    <div class="modes" role="tablist">
+      <button type="button" id="btn-presentacion" aria-pressed="true">Presentación</button>
+      <button type="button" id="btn-wireframe" aria-pressed="false">Wireframe</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="presentacion" class="view is-on" aria-label="Vista presentación">
+      <div class="slide">
+        <div class="proof">
+          <div class="stamp" id="stamp">Envío 1</div>
+          <iframe id="slide-frame" title="Email en presentación"></iframe>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Envíos">
+        <button type="button" id="prev" aria-label="Envío anterior">←</button>
+        <div class="dots">
+          <button type="button" data-index="0" aria-current="true">1</button>
+          <button type="button" data-index="1">2</button>
+          <button type="button" data-index="2">3</button>
+        </div>
+        <button type="button" id="next" aria-label="Envío siguiente">→</button>
+      </nav>
+    </section>
+
+    <section id="wireframe" class="view" aria-label="Vista wireframe">
+      <div class="board">
+        <article class="cell">
+          <div class="cell-head"><b>Envío 1</b><span>01 / 03</span></div>
+          <div class="mail">
+            <div class="mail-bar">
+              <div>De <em>marca@correo.com</em></div>
+              <div>Asunto <em>Envío 1</em></div>
+            </div>
+            <iframe src="emails/envio-1.html" title="Envío 1"></iframe>
+          </div>
+        </article>
+        <div class="arrow" aria-hidden="true">→</div>
+        <article class="cell">
+          <div class="cell-head"><b>Envío 2</b><span>02 / 03</span></div>
+          <div class="mail">
+            <div class="mail-bar">
+              <div>De <em>marca@correo.com</em></div>
+              <div>Asunto <em>Envío 2</em></div>
+            </div>
+            <iframe src="emails/envio-2.html" title="Envío 2"></iframe>
+          </div>
+        </article>
+        <div class="arrow" aria-hidden="true">→</div>
+        <article class="cell">
+          <div class="cell-head"><b>Envío 3</b><span>03 / 03</span></div>
+          <div class="mail">
+            <div class="mail-bar">
+              <div>De <em>marca@correo.com</em></div>
+              <div>Asunto <em>Envío 3</em></div>
+            </div>
+            <iframe src="emails/envio-3.html" title="Envío 3"></iframe>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const sends = [
+      { label: "Envío 1", src: "emails/envio-1.html" },
+      { label: "Envío 2", src: "emails/envio-2.html" },
+      { label: "Envío 3", src: "emails/envio-3.html" }
+    ];
+
+    let index = 0;
+    const frame = document.getElementById("slide-frame");
+    const stamp = document.getElementById("stamp");
+    const prev = document.getElementById("prev");
+    const next = document.getElementById("next");
+    const dots = document.querySelectorAll(".dots button");
+    const presentacion = document.getElementById("presentacion");
+    const wireframe = document.getElementById("wireframe");
+    const btnPresentacion = document.getElementById("btn-presentacion");
+    const btnWireframe = document.getElementById("btn-wireframe");
+
+    function render() {
+      frame.src = sends[index].src;
+      stamp.textContent = sends[index].label;
+      prev.disabled = index === 0;
+      next.disabled = index === sends.length - 1;
+      dots.forEach((dot, i) => {
+        dot.setAttribute("aria-current", i === index ? "true" : "false");
+      });
+    }
+
+    function show(view) {
+      const isDeck = view === "presentacion";
+      presentacion.classList.toggle("is-on", isDeck);
+      wireframe.classList.toggle("is-on", !isDeck);
+      btnPresentacion.setAttribute("aria-pressed", String(isDeck));
+      btnWireframe.setAttribute("aria-pressed", String(!isDeck));
+    }
+
+    prev.addEventListener("click", () => { if (index > 0) { index -= 1; render(); } });
+    next.addEventListener("click", () => { if (index < sends.length - 1) { index += 1; render(); } });
+    dots.forEach((dot) => {
+      dot.addEventListener("click", () => {
+        index = Number(dot.dataset.index);
+        render();
+      });
+    });
+    btnPresentacion.addEventListener("click", () => show("presentacion"));
+    btnWireframe.addEventListener("click", () => show("wireframe"));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight") next.click();
+      if (event.key === "ArrowLeft") prev.click();
+      if (event.key === "1") show("presentacion");
+      if (event.key === "2") show("wireframe");
+    });
+
+    render();
+  </script>
+</body>
+</html>
